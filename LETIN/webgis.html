@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Infrastruktur Daerah Istimewa Yogyakarta</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>WebGIS Infrastruktur DIY</h1>
+        <p class="lead">Peta interaktif untuk melihat informasi infrastruktur di Daerah Istimewa Yogyakarta</p>
+    </header>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Inisialisasi peta
+        var map = L.map('map').setView([-7.797068, 110.370529], 12);
+
+        // Tambahkan layer peta
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Tambahkan file GeoJSON untuk area Yogyakarta
+        $.getJSON("DATA/AREADIY.geojson", function(data) {
+            L.geoJSON(data, {
+                style: {
+                    color: "#ff7800",
+                    weight: 2,
+                    opacity: 0.65
+                }
+            }).addTo(map);
+        });
+
+        // Data infrastruktur DIY dengan beberapa titik
+        var infrastrukturDIY = {
+            "type": "FeatureCollection",
+            "features": [
+                {"type": "Feature", "properties": {"name": "RSUP Dr. Sardjito", "type": "Rumah Sakit", "address": "Jl. Kesehatan No.1, Sekip, Sleman, DIY", "email": "info@rsdrsardjito.id", "fax": "(0274) 123456"}, "geometry": {"type": "Point", "coordinates": [110.363991, -7.768858]}},
+                {"type": "Feature", "properties": {"name": "SMA Negeri 1 Yogyakarta", "type": "Sekolah", "address": "Jl. Cik Di Tiro No.1, Yogyakarta, DIY", "email": "info@sman1yogyakarta.sch.id", "fax": "(0274) 654321"}, "geometry": {"type": "Point", "coordinates": [110.369412, -7.797476]}},
+                {"type": "Feature", "properties": {"name": "Universitas Gadjah Mada", "type": "Kampus", "address": "Jl. Bulaksumur, Sleman, DIY", "email": "info@ugm.ac.id", "fax": "(0274) 987654"}, "geometry": {"type": "Point", "coordinates": [110.370530, -7.770020]}},
+                {"type": "Feature", "properties": {"name": "Rumah Sakit Panti Rapih", "type": "Rumah Sakit", "address": "Jl. Cik Di Tiro No.30, Yogyakarta, DIY", "email": "info@pantirapih.or.id", "fax": "(0274) 112233"}, "geometry": {"type": "Point", "coordinates": [110.370750, -7.782870]}},
+                {"type": "Feature", "properties": {"name": "Bandara Internasional Yogyakarta", "type": "Bandara", "address": "Kulon Progo, DIY", "email": "info@biy.id", "fax": "(0274) 445566"}, "geometry": {"type": "Point", "coordinates": [110.003126, -7.905125]}},
+                {"type": "Feature", "properties": {"name": "Terminal Giwangan", "type": "Terminal", "address": "Jl. Imogiri Timur No.1, Giwangan, Yogyakarta, DIY", "email": "info@terminalgiwangan.id", "fax": "(0274) 778899"}, "geometry": {"type": "Point", "coordinates": [110.398220, -7.832643]}},
+                {"type": "Feature", "properties": {"name": "Stasiun Tugu Yogyakarta", "type": "Stasiun", "address": "Jl. Pasar Kembang, Sosromenduran, Yogyakarta, DIY", "email": "info@stasiuntuguyogyakarta.id", "fax": "(0274) 445533"}, "geometry": {"type": "Point", "coordinates": [110.363067, -7.789308]}},
+                {"type": "Feature", "properties": {"name": "RS Bethesda Yogyakarta", "type": "Rumah Sakit", "address": "Jl. Jend. Sudirman No.70, Yogyakarta, DIY", "email": "info@bethesdayogyakarta.or.id", "fax": "(0274) 332211"}, "geometry": {"type": "Point", "coordinates": [110.366251, -7.789085]}},
+                {"type": "Feature", "properties": {"name": "Kantor Gubernur DIY", "type": "Gedung Pemerintahan", "address": "Jl. Malioboro No.3, Yogyakarta, DIY", "email": "info@gubernurdiy.go.id", "fax": "(0274) 123789"}, "geometry": {"type": "Point", "coordinates": [110.364123, -7.800737]}},
+                {"type": "Feature", "properties": {"name": "Museum Sonobudoyo", "type": "Museum", "address": "Jl. Pangurakan No.6, Yogyakarta, DIY", "email": "info@museumsonobudoyo.id", "fax": "(0274) 554433"}, "geometry": {"type": "Point", "coordinates": [110.360556, -7.801780]}}
+            ]
+        };
+
+        // Fungsi styling untuk marker berdasarkan tipe infrastruktur
+        function styleInfrastruktur(feature) {
+            switch (feature.properties.type) {
+                case 'Rumah Sakit': return {color: "red"};
+                case 'Sekolah': return {color: "blue"};
+                case 'Kampus': return {color: "purple"};
+                case 'Bandara': return {color: "orange"};
+                case 'Terminal': return {color: "brown"};
+                case 'Stasiun': return {color: "gray"};
+                case 'Gedung Pemerintahan': return {color: "green"};
+                case 'Museum': return {color: "darkblue"};
+            }
+        }
+
+        // Tambahkan data GeoJSON ke peta
+        L.geoJSON(infrastrukturDIY, {
+            style: styleInfrastruktur,
+            onEachFeature: function (feature, layer) {
+                if (feature.geometry.type === "Point") {
+                    let popupContent = "<b>" + feature.properties.name + "</b><br>" +
+                                       "Tipe: " + feature.properties.type + "<br>" +
+                                       "Alamat: " + feature.properties.address + "<br>" +
+                                       "Koordinat: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0] + "<br>" +
+                                       "Email: " + feature.properties.email + "<br>" +
+                                       "Fax: " + feature.properties.fax;
+                    layer.bindPopup(popupContent);
+                }
+            }
+        }).addTo(map);
+    </script>
+
+</body>
+</html>
