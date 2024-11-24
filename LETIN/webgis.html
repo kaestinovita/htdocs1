@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <style>
         #map {
-            height: 600px;
+            height: 500px;
             width: 100%;
         }
         .header {
@@ -16,6 +16,13 @@
             color: white;
             padding: 10px;
             text-align: center;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .map-container {
+            max-width: 800px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -26,23 +33,27 @@
         <p class="lead">Peta interaktif untuk melihat informasi infrastruktur di Daerah Istimewa Yogyakarta</p>
     </header>
 
-    <div id="map"></div>
+    <!-- Leaflet Map with limited width -->
+    <div class="container map-container">
+        <div id="map"></div>
+    </div>
+
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        // Inisialisasi peta
+        // Initialize the Leaflet map
         var map = L.map('map').setView([-7.797068, 110.370529], 12);
 
-        // Tambahkan layer peta
+        // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Tambahkan file GeoJSON untuk area Yogyakarta
+        // Add GeoJSON area for Yogyakarta
         $.getJSON("DATA/AREADIY.geojson", function(data) {
             L.geoJSON(data, {
                 style: {
@@ -53,7 +64,7 @@
             }).addTo(map);
         });
 
-        // Data infrastruktur DIY dengan beberapa titik
+        // Infrastructure data in GeoJSON format
         var infrastrukturDIY = {
             "type": "FeatureCollection",
             "features": [
@@ -70,7 +81,7 @@
             ]
         };
 
-        // Fungsi styling untuk marker berdasarkan tipe infrastruktur
+        // Marker styling based on type of infrastructure
         function styleInfrastruktur(feature) {
             switch (feature.properties.type) {
                 case 'Rumah Sakit': return {color: "red"};
@@ -84,7 +95,7 @@
             }
         }
 
-        // Tambahkan data GeoJSON ke peta
+        // Add GeoJSON data with popup for each feature
         L.geoJSON(infrastrukturDIY, {
             style: styleInfrastruktur,
             onEachFeature: function (feature, layer) {
